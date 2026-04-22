@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>МедиКлиника</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bd:#0a2a5e;--bm:#1a4fa0;--bl:#2e7dd1;--ac:#4fb8f0;
+  --yl:#f5c518;--wh:#ffffff;--mu:#6b8cba;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--wh);color:var(--bd);}
+
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(10,42,94,0.97);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;height:68px;
+}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;cursor:pointer;}
+.logo-icon{width:38px;height:38px;background:var(--ac);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--wh);font-family:'Playfair Display',serif;}
+.logo-text{color:var(--wh);font-size:18px;font-weight:500;}
+.nav-links{display:flex;gap:36px;list-style:none;}
+.nav-links a{color:rgba(255,255,255,0.75);text-decoration:none;font-size:14px;cursor:pointer;transition:color 0.2s;}
+.nav-links a:hover{color:var(--ac);}
+.nav-cta{background:var(--yl)!important;color:var(--bd)!important;padding:9px 22px;border-radius:8px;font-weight:600!important;}
+.nav-cta:hover{background:#e0b010!important;}
+
+.page{display:none;}
+.page.active{display:block;}
+
+.hero{
+  min-height:100vh;
+  background:linear-gradient(135deg,var(--bd) 0%,var(--bm) 60%,#1a6bb0 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:120px 48px 60px;position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(79,184,240,0.12) 0%,transparent 70%);top:-100px;right:-100px;border-radius:50%;}
+.hero-badge{display:inline-block;background:rgba(79,184,240,0.15);border:1px solid rgba(79,184,240,0.3);color:var(--ac);font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:6px 18px;border-radius:20px;margin-bottom:28px;}
+.hero h1{font-family:'Playfair Display',serif;font-size:56px;font-weight:600;color:var(--wh);line-height:1.15;margin-bottom:20px;max-width:720px;}
+.hero h1 span{color:var(--ac);}
+.hero p{font-size:17px;color:rgba(255,255,255,0.65);max-width:480px;line-height:1.7;margin-bottom:40px;font-weight:300;}
+.hero-buttons{display:flex;gap:14px;justify-content:center;margin-bottom:70px;}
+.btn-primary{background:var(--ac);color:var(--wh);padding:14px 32px;border-radius:10px;font-size:15px;font-weight:500;border:none;cursor:pointer;transition:opacity 0.2s,transform 0.2s;}
+.btn-primary:hover{opacity:0.9;transform:translateY(-1px);}
+.btn-outline{background:transparent;color:var(--wh);padding:14px 32px;border-radius:10px;font-size:15px;font-weight:400;border:1px solid rgba(255,255,255,0.3);cursor:pointer;transition:border-color 0.2s,background 0.2s;}
+.btn-outline:hover{border-color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.05);}
+.stats{display:flex;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:16px;overflow:hidden;position:relative;z-index:2;}
+.stat{padding:22px 40px;text-align:center;border-right:1px solid rgba(255,255,255,0.1);}
+.stat:last-child{border-right:none;}
+.stat-num{font-family:'Playfair Display',serif;font-size:28px;color:var(--wh);font-weight:600;display:block;}
+.stat-label{font-size:12px;color:rgba(255,255,255,0.5);display:block;margin-top:4px;}
+
+.doctors-section{padding:80px 48px;background:#f4f9ff;}
+.section-label{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--bl);font-weight:500;margin-bottom:10px;}
+.section-title{font-family:'Playfair Display',serif;font-size:36px;color:var(--bd);margin-bottom:8px;}
+.section-sub{font-size:15px;color:var(--mu);margin-bottom:48px;font-weight:300;}
+.doctors-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:24px;max-width:1100px;margin:0 auto;}
+.doctor-card{background:var(--wh);border-radius:16px;overflow:hidden;border:1px solid rgba(46,125,209,0.1);transition:transform 0.25s,box-shadow 0.25s;}
+.doctor-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(10,42,94,0.1);}
+.doctor-photo{width:100%;height:180px;object-fit:cover;object-position:top;display:block;}
+.doctor-info{padding:18px;}
+.doctor-name{font-size:15px;font-weight:500;color:var(--bd);margin-bottom:3px;}
+.doctor-spec{font-size:13px;color:var(--mu);margin-bottom:3px;}
+.doctor-exp{font-size:12px;color:var(--bl);margin-bottom:8px;}
+.stars{color:#f0aa00;font-size:13px;margin-bottom:14px;letter-spacing:2px;}
+.btn-book{width:100%;background:var(--bd);color:var(--wh);border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s;font-family:'DM Sans',sans-serif;}
+.btn-book:hover{background:var(--bm);}
+
+.about-page{padding:100px 48px 80px;}
+.about-hero{background:linear-gradient(135deg,var(--bd),var(--bm));color:var(--wh);padding:80px 60px;border-radius:24px;margin-bottom:60px;position:relative;overflow:hidden;}
+.about-hero::before{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(79,184,240,0.15) 0%,transparent 70%);right:-80px;top:-80px;border-radius:50%;}
+.about-hero h1{font-family:'Playfair Display',serif;font-size:44px;margin-bottom:20px;}
+.about-hero p{font-size:16px;line-height:1.8;opacity:0.8;max-width:600px;}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:60px;}
+.about-card{background:#f4f9ff;border-radius:16px;padding:32px;border:1px solid rgba(46,125,209,0.1);}
+.about-card h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--bd);margin-bottom:14px;}
+.about-card p{font-size:15px;color:#445;line-height:1.8;}
+.about-values{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.value-card{background:var(--bd);color:var(--wh);border-radius:16px;padding:28px;text-align:center;}
+.value-icon{font-size:32px;margin-bottom:12px;}
+.value-title{font-size:15px;font-weight:500;margin-bottom:8px;}
+.value-desc{font-size:13px;opacity:0.65;line-height:1.6;}
+
+.doctors-page{padding:100px 48px 80px;}
+.page-header{text-align:center;margin-bottom:60px;}
+.page-header h1{font-family:'Playfair Display',serif;font-size:44px;color:var(--bd);margin-bottom:12px;}
+.page-header p{font-size:16px;color:var(--mu);}
+.doctors-full-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;max-width:1200px;margin:0 auto;}
+
+.addresses-page{padding:100px 48px 80px;}
+.addresses-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px;max-width:900px;margin:0 auto;}
+.address-card{background:var(--wh);border:1px solid rgba(46,125,209,0.15);border-radius:20px;padding:32px;transition:box-shadow 0.2s;}
+.address-card:hover{box-shadow:0 8px 24px rgba(10,42,94,0.1);}
+.address-num{width:40px;height:40px;background:var(--bd);color:var(--wh);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:16px;margin-bottom:16px;}
+.address-card h3{font-size:18px;font-weight:500;color:var(--bd);margin-bottom:8px;}
+.address-card p{font-size:14px;color:var(--mu);line-height:1.8;}
+.address-tag{display:inline-block;background:#f0f7ff;color:var(--bl);font-size:12px;padding:4px 10px;border-radius:6px;margin-top:12px;}
+
+footer{background:var(--bd);color:rgba(255,255,255,0.6);padding:50px 48px 32px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px;}
+.footer-col h4{color:var(--wh);font-size:14px;font-weight:500;margin-bottom:16px;}
+.footer-col p,.footer-col a{font-size:13px;line-height:2;color:rgba(255,255,255,0.5);text-decoration:none;display:block;cursor:pointer;}
+.footer-col a:hover{color:var(--ac);}
+.footer-bottom{background:var(--bd);text-align:center;padding:16px 48px 28px;font-size:12px;color:rgba(255,255,255,0.25);border-top:1px solid rgba(255,255,255,0.07);}
+
+.modal-overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--wh);border-radius:20px;padding:40px;width:100%;max-width:480px;position:relative;}
+.modal h2{font-family:'Playfair Display',serif;font-size:26px;color:var(--bd);margin-bottom:6px;}
+.modal p.sub{font-size:14px;color:var(--mu);margin-bottom:28px;}
+.modal-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;cursor:pointer;color:#999;}
+.form-group{margin-bottom:18px;}
+.form-group label{display:block;font-size:13px;font-weight:500;color:var(--bd);margin-bottom:6px;}
+.form-group input,.form-group select{width:100%;padding:11px 14px;border:1.5px solid #d0dff0;border-radius:10px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--bd);outline:none;transition:border-color 0.2s;background:var(--wh);}
+.form-group input:focus,.form-group select:focus{border-color:var(--bl);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.btn-submit{width:100%;background:var(--bd);color:var(--wh);border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s;margin-top:8px;}
+.btn-submit:hover{background:var(--bm);}
+.success-msg{display:none;text-align:center;padding:20px 0;}
+.success-msg .icon{font-size:48px;margin-bottom:12px;}
+.success-msg h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--bd);margin-bottom:8px;}
+.success-msg p{font-size:14px;color:var(--mu);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showPage('home')">
+    <div class="logo-icon">М</div>
+    <span class="logo-text">МедиКлиника</span>
+  </div>
+  <ul class="nav-links">
+    <li><a onclick="showPage('about')">О нас</a></li>
+    <li><a onclick="showPage('doctors')">Доктора</a></li>
+    <li><a onclick="showPage('addresses')">Наши адреса</a></li>
+    <li><a class="nav-cta" onclick="openModal()">Записаться</a></li>
+  </ul>
+</nav>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div class="hero-badge">Ваше здоровье — наш приоритет</div>
+    <h1>Лучшие врачи города<br>в одной <span>клинике</span></h1>
+    <p>Современное оборудование, опытные специалисты и индивидуальный подход к каждому пациенту</p>
+    <div class="hero-buttons">
+      <button class="btn-primary" onclick="openModal()">Записаться на приём</button>
+      <button class="btn-outline" onclick="showPage('doctors')">Наши специалисты</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><span class="stat-num">15+</span><span class="stat-label">лет работы</span></div>
+      <div class="stat"><span class="stat-num">12</span><span class="stat-label">врачей</span></div>
+      <div class="stat"><span class="stat-num">12 000</span><span class="stat-label">пациентов</span></div>
+      <div class="stat"><span class="stat-num">4.9 ★</span><span class="stat-label">рейтинг</span></div>
+    </div>
+  </section>
+  <section class="doctors-section">
+    <div style="max-width:1100px;margin:0 auto;">
+      <p class="section-label">Наши специалисты</p>
+      <h2 class="section-title">Топ врачей клиники</h2>
+      <p class="section-sub">Запишитесь онлайн — это займёт меньше минуты</p>
+    </div>
+    <div class="doctors-grid" id="top-doctors"></div>
+  </section>
+  <footer>
+    <div class="footer-col"><h4>МедиКлиника</h4><p>Современная медицина<br>с заботой о каждом пациенте.</p></div>
+    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="openModal()">Записаться</a></div>
+    <div class="footer-col"><h4>Контакты</h4><p>📞 +7 (4822) 55-00-11</p><p>✉️ info@mediklinika.ru</p><p>📍 Тверь, ул. Советская, 1</p><p>⏰ Пн–Пт: 8:00–20:00</p></div>
+  </footer>
+  <div class="footer-bottom">© 2026 МедиКлиника. Все права защищены.</div>
+</div>
+
+<!-- ABOUT -->
+<div id="page-about" class="page">
+  <div class="about-page">
+    <div class="about-hero">
+      <h1>О клинике МедиКлиника</h1>
+      <p>Мы работаем с 2009 года и за это время стали одной из ведущих многопрофильных клиник Твери. Наша миссия — сделать качественную медицину доступной для каждого жителя города.</p>
+    </div>
+    <div class="about-grid">
+      <div class="about-card">
+        <h3>Наша история</h3>
+        <p>МедиКлиника была основана в 2009 году командой врачей с многолетним опытом. Начав с небольшого кабинета терапевта, сегодня мы — это 4 филиала по всей Твери, 12 специалистов высшей категории и более 12 000 благодарных пациентов.</p>
+      </div>
+      <div class="about-card">
+        <h3>Наши преимущества</h3>
+        <p>Мы используем только сертифицированное оборудование европейского производства. Каждый врач клиники проходит регулярное обучение и имеет стаж не менее 8 лет. Принимаем по предварительной записи — без очередей и ожидания.</p>
+      </div>
+    </div>
+    <div class="about-values">
+      <div class="value-card"><div class="value-icon">🏥</div><div class="value-title">Современное оборудование</div><div class="value-desc">Диагностика на аппаратах последнего поколения</div></div>
+      <div class="value-card"><div class="value-icon">👨‍⚕️</div><div class="value-title">Опытные врачи</div><div class="value-desc">Средний стаж наших специалистов — 15 лет</div></div>
+      <div class="value-card"><div class="value-icon">❤️</div><div class="value-title">Забота о пациенте</div><div class="value-desc">Индивидуальный подход и внимание к каждому</div></div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-col"><h4>МедиКлиника</h4><p>Современная медицина с заботой о каждом пациенте.</p></div>
+    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="openModal()">Записаться</a></div>
+    <div class="footer-col"><h4>Контакты</h4><p>📞 +7 (4822) 55-00-11</p><p>✉️ info@mediklinika.ru</p><p>📍 Тверь, ул. Советская, 1</p><p>⏰ Пн–Пт: 8:00–20:00</p></div>
+  </footer>
+  <div class="footer-bottom">© 2026 МедиКлиника. Все права защищены.</div>
+</div>
+
+<!-- DOCTORS -->
+<div id="page-doctors" class="page">
+  <div class="doctors-page">
+    <div class="page-header">
+      <p class="section-label">Наша команда</p>
+      <h1>Все специалисты клиники</h1>
+      <p>12 врачей высшей категории готовы вам помочь</p>
+    </div>
+    <div class="doctors-full-grid" id="all-doctors"></div>
+  </div>
+  <footer>
+    <div class="footer-col"><h4>МедиКлиника</h4><p>Современная медицина с заботой о каждом пациенте.</p></div>
+    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="openModal()">Записаться</a></div>
+    <div class="footer-col"><h4>Контакты</h4><p>📞 +7 (4822) 55-00-11</p><p>✉️ info@mediklinika.ru</p><p>📍 Тверь, ул. Советская, 1</p><p>⏰ Пн–Пт: 8:00–20:00</p></div>
+  </footer>
+  <div class="footer-bottom">© 2026 МедиКлиника. Все права защищены.</div>
+</div>
+
+<!-- ADDRESSES -->
+<div id="page-addresses" class="page">
+  <div class="addresses-page">
+    <div class="page-header">
+      <p class="section-label">Где нас найти</p>
+      <h1>Наши адреса в Твери</h1>
+      <p>4 удобно расположенных филиала по всему городу</p>
+    </div>
+    <div class="addresses-grid">
+      <div class="address-card"><div class="address-num">1</div><h3>Центральный филиал</h3><p>📍 ул. Советская, 34<br>📞 +7 (4822) 55-00-11<br>⏰ Пн–Пт: 8:00–20:00<br>⏰ Сб–Вс: 9:00–16:00</p><span class="address-tag">Главный офис</span></div>
+      <div class="address-card"><div class="address-num">2</div><h3>Филиал Заволжский</h3><p>📍 ул. Паши Савельевой, 15<br>📞 +7 (4822) 55-00-22<br>⏰ Пн–Пт: 8:00–20:00<br>⏰ Сб: 9:00–14:00</p><span class="address-tag">Заволжский район</span></div>
+      <div class="address-card"><div class="address-num">3</div><h3>Филиал Московский</h3><p>📍 Московское шоссе, 82<br>📞 +7 (4822) 55-00-33<br>⏰ Пн–Пт: 9:00–19:00<br>⏰ Сб: 9:00–14:00</p><span class="address-tag">Московский район</span></div>
+      <div class="address-card"><div class="address-num">4</div><h3>Филиал Пролетарский</h3><p>📍 ул. Склизкова, 101<br>📞 +7 (4822) 55-00-44<br>⏰ Пн–Пт: 8:00–18:00<br>⏰ Сб: 10:00–14:00</p><span class="address-tag">Пролетарский район</span></div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-col"><h4>МедиКлиника</h4><p>Современная медицина с заботой о каждом пациенте.</p></div>
+    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="openModal()">Записаться</a></div>
+    <div class="footer-col"><h4>Контакты</h4><p>📞 +7 (4822) 55-00-11</p><p>✉️ info@mediklinika.ru</p><p>📍 Тверь, ул. Советская, 1</p><p>⏰ Пн–Пт: 8:00–20:00</p></div>
+  </footer>
+  <div class="footer-bottom">© 2026 МедиКлиника. Все права защищены.</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-form-content">
+      <h2>Записаться на приём</h2>
+      <p class="sub">Заполните форму — мы перезвоним для подтверждения</p>
+      <div class="form-row">
+        <div class="form-group"><label>Ваше имя</label><input type="text" placeholder="Иван Иванов" id="f-name"></div>
+        <div class="form-group"><label>Номер телефона</label><input type="tel" placeholder="+7 (___) ___-__-__" id="f-phone"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Дата записи</label><input type="date" id="f-date"></div>
+        <div class="form-group"><label>Выберите врача</label><select id="f-doctor"><option value="">— выберите —</option></select></div>
+      </div>
+      <button class="btn-submit" onclick="submitForm()">Записаться</button>
+    </div>
+    <div class="success-msg" id="modal-success">
+      <div class="icon">✅</div>
+      <h3>Заявка принята!</h3>
+      <p>Мы свяжемся с вами в ближайшее время<br>для подтверждения записи.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const doctors = [
+  {name:'Алексей Иванов',spec:'Кардиолог',exp:18,stars:5,photo:'https://randomuser.me/api/portraits/men/32.jpg'},
+  {name:'Мария Петрова',spec:'Невролог',exp:12,stars:5,photo:'https://randomuser.me/api/portraits/women/44.jpg'},
+  {name:'Дмитрий Сидоров',spec:'Терапевт',exp:22,stars:5,photo:'https://randomuser.me/api/portraits/men/55.jpg'},
+  {name:'Ольга Кузнецова',spec:'Офтальмолог',exp:9,stars:4,photo:'https://randomuser.me/api/portraits/women/68.jpg'},
+  {name:'Андрей Морозов',spec:'Хирург',exp:16,stars:5,photo:'https://randomuser.me/api/portraits/men/41.jpg'},
+  {name:'Елена Соколова',spec:'Педиатр',exp:14,stars:5,photo:'https://randomuser.me/api/portraits/women/29.jpg'},
+  {name:'Игорь Лебедев',spec:'Уролог',exp:11,stars:4,photo:'https://randomuser.me/api/portraits/men/63.jpg'},
+  {name:'Наталья Волкова',spec:'Гинеколог',exp:17,stars:5,photo:'https://randomuser.me/api/portraits/women/52.jpg'},
+  {name:'Сергей Козлов',spec:'Ортопед',exp:13,stars:5,photo:'https://randomuser.me/api/portraits/men/77.jpg'},
+  {name:'Анна Новикова',spec:'Дерматолог',exp:8,stars:4,photo:'https://randomuser.me/api/portraits/women/37.jpg'},
+  {name:'Павел Зайцев',spec:'Эндокринолог',exp:15,stars:5,photo:'https://randomuser.me/api/portraits/men/22.jpg'},
+  {name:'Ирина Фёдорова',spec:'Психотерапевт',exp:10,stars:5,photo:'https://randomuser.me/api/portraits/women/61.jpg'},
+];
+
+function starsHtml(n){return '★'.repeat(n)+'☆'.repeat(5-n);}
+
+function doctorCard(d){
+  return `<div class="doctor-card">
+    <img class="doctor-photo" src="${d.photo}" alt="${d.name}">
+    <div class="doctor-info">
+      <p class="doctor-name">${d.name}</p>
+      <p class="doctor-spec">${d.spec}</p>
+      <p class="doctor-exp">Стаж: ${d.exp} лет</p>
+      <div class="stars">${starsHtml(d.stars)}</div>
+      <button class="btn-book" onclick="openModal('${d.name}')">Записаться</button>
+    </div>
+  </div>`;}
+
+document.getElementById('top-doctors').innerHTML = doctors.slice(0,4).map(doctorCard).join('');
+document.getElementById('all-doctors').innerHTML = doctors.map(doctorCard).join('');
+
+const sel = document.getElementById('f-doctor');
+doctors.forEach(d=>{
+  const o=document.createElement('option');
+  o.value=d.name;o.textContent=`${d.name} — ${d.spec}`;
+  sel.appendChild(o);
+});
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function openModal(doctorName){
+  document.getElementById('modal-form-content').style.display='block';
+  document.getElementById('modal-success').style.display='none';
+  if(doctorName) document.getElementById('f-doctor').value=doctorName;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+}
+
+function submitForm(){
+  const name=document.getElementById('f-name').value.trim();
+  const phone=document.getElementById('f-phone').value.trim();
+  const date=document.getElementById('f-date').value;
+  const doctor=document.getElementById('f-doctor').value;
+  if(!name||!phone||!date||!doctor){alert('Пожалуйста, заполните все поля');return;}
+  document.getElementById('modal-form-content').style.display='none';
+  document.getElementById('modal-success').style.display='block';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-phone').value='';
+  document.getElementById('f-date').value='';
+  document.getElementById('f-doctor').value='';
+}
+
+document.getElementById('modal').addEventListener('click',function(e){
+  if(e.target===this) closeModal();
+});
+</script>
+</body>
+</html>
