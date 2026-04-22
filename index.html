@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>МедиКлиника</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -118,10 +119,12 @@ footer{background:var(--bd);color:rgba(255,255,255,0.6);padding:50px 48px 32px;d
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .btn-submit{width:100%;background:var(--bd);color:var(--wh);border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.2s;margin-top:8px;}
 .btn-submit:hover{background:var(--bm);}
+.btn-submit:disabled{opacity:0.6;cursor:not-allowed;}
 .success-msg{display:none;text-align:center;padding:20px 0;}
 .success-msg .icon{font-size:48px;margin-bottom:12px;}
 .success-msg h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--bd);margin-bottom:8px;}
 .success-msg p{font-size:14px;color:var(--mu);}
+.error-msg{background:#fff0f0;color:#c0392b;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:10px;display:none;}
 </style>
 </head>
 <body>
@@ -180,14 +183,8 @@ footer{background:var(--bd);color:rgba(255,255,255,0.6);padding:50px 48px 32px;d
       <p>Мы работаем с 2009 года и за это время стали одной из ведущих многопрофильных клиник Твери. Наша миссия — сделать качественную медицину доступной для каждого жителя города.</p>
     </div>
     <div class="about-grid">
-      <div class="about-card">
-        <h3>Наша история</h3>
-        <p>МедиКлиника была основана в 2009 году командой врачей с многолетним опытом. Начав с небольшого кабинета терапевта, сегодня мы — это 4 филиала по всей Твери, 12 специалистов высшей категории и более 12 000 благодарных пациентов.</p>
-      </div>
-      <div class="about-card">
-        <h3>Наши преимущества</h3>
-        <p>Мы используем только сертифицированное оборудование европейского производства. Каждый врач клиники проходит регулярное обучение и имеет стаж не менее 8 лет. Принимаем по предварительной записи — без очередей и ожидания.</p>
-      </div>
+      <div class="about-card"><h3>Наша история</h3><p>МедиКлиника была основана в 2009 году командой врачей с многолетним опытом. Начав с небольшого кабинета терапевта, сегодня мы — это 4 филиала по всей Твери, 12 специалистов высшей категории и более 12 000 благодарных пациентов.</p></div>
+      <div class="about-card"><h3>Наши преимущества</h3><p>Мы используем только сертифицированное оборудование европейского производства. Каждый врач клиники проходит регулярное обучение и имеет стаж не менее 8 лет. Принимаем по предварительной записи — без очередей и ожидания.</p></div>
     </div>
     <div class="about-values">
       <div class="value-card"><div class="value-icon">🏥</div><div class="value-title">Современное оборудование</div><div class="value-desc">Диагностика на аппаратах последнего поколения</div></div>
@@ -259,7 +256,8 @@ footer{background:var(--bd);color:rgba(255,255,255,0.6);padding:50px 48px 32px;d
         <div class="form-group"><label>Дата записи</label><input type="date" id="f-date"></div>
         <div class="form-group"><label>Выберите врача</label><select id="f-doctor"><option value="">— выберите —</option></select></div>
       </div>
-      <button class="btn-submit" onclick="submitForm()">Записаться</button>
+      <div class="error-msg" id="error-msg">Произошла ошибка. Попробуйте ещё раз.</div>
+      <button class="btn-submit" id="btn-submit" onclick="submitForm()">Записаться</button>
     </div>
     <div class="success-msg" id="modal-success">
       <div class="icon">✅</div>
@@ -270,19 +268,25 @@ footer{background:var(--bd);color:rgba(255,255,255,0.6);padding:50px 48px 32px;d
 </div>
 
 <script>
+// Supabase подключение
+const SUPABASE_URL = 'https://qudmrazjqdmageqifgeq.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_wq4rM2qYPDwfygZx_Or7KQ_r1UgqNtQ';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const doctors = [
-  {name:'Алексей Иванов',spec:'Кардиолог',exp:18,stars:5,photo:'https://randomuser.me/api/portraits/men/32.jpg'},
-  {name:'Мария Петрова',spec:'Невролог',exp:12,stars:5,photo:'https://randomuser.me/api/portraits/women/44.jpg'},
-  {name:'Дмитрий Сидоров',spec:'Терапевт',exp:22,stars:5,photo:'https://randomuser.me/api/portraits/men/55.jpg'},
-  {name:'Ольга Кузнецова',spec:'Офтальмолог',exp:9,stars:4,photo:'https://randomuser.me/api/portraits/women/68.jpg'},
-  {name:'Андрей Морозов',spec:'Хирург',exp:16,stars:5,photo:'https://randomuser.me/api/portraits/men/41.jpg'},
-  {name:'Елена Соколова',spec:'Педиатр',exp:14,stars:5,photo:'https://randomuser.me/api/portraits/women/29.jpg'},
-  {name:'Игорь Лебедев',spec:'Уролог',exp:11,stars:4,photo:'https://randomuser.me/api/portraits/men/63.jpg'},
-  {name:'Наталья Волкова',spec:'Гинеколог',exp:17,stars:5,photo:'https://randomuser.me/api/portraits/women/52.jpg'},
-  {name:'Сергей Козлов',spec:'Ортопед',exp:13,stars:5,photo:'https://randomuser.me/api/portraits/men/77.jpg'},
-  {name:'Анна Новикова',spec:'Дерматолог',exp:8,stars:4,photo:'https://randomuser.me/api/portraits/women/37.jpg'},
-  {name:'Павел Зайцев',spec:'Эндокринолог',exp:15,stars:5,photo:'https://randomuser.me/api/portraits/men/22.jpg'},
-  {name:'Ирина Фёдорова',spec:'Психотерапевт',exp:10,stars:5,photo:'https://randomuser.me/api/portraits/women/61.jpg'},
+  {name:'Алексей Иванов',spec:'Кардиолог',exp:18,stars:5,photo:'https://i.pravatar.cc/300?img=11'},
+  {name:'Мария Петрова',spec:'Невролог',exp:12,stars:5,photo:'https://i.pravatar.cc/300?img=5'},
+  {name:'Дмитрий Сидоров',spec:'Терапевт',exp:22,stars:5,photo:'https://i.pravatar.cc/300?img=15'},
+  {name:'Ольга Кузнецова',spec:'Офтальмолог',exp:9,stars:4,photo:'https://i.pravatar.cc/300?img=9'},
+  {name:'Андрей Морозов',spec:'Хирург',exp:16,stars:5,photo:'https://i.pravatar.cc/300?img=53'},
+  {name:'Елена Соколова',spec:'Педиатр',exp:14,stars:5,photo:'https://i.pravatar.cc/300?img=47'},
+  {name:'Игорь Лебедев',spec:'Уролог',exp:11,stars:4,photo:'https://i.pravatar.cc/300?img=57'},
+  {name:'Наталья Волкова',spec:'Гинеколог',exp:17,stars:5,photo:'https://i.pravatar.cc/300?img=25'},
+  {name:'Сергей Козлов',spec:'Ортопед',exp:13,stars:5,photo:'https://i.pravatar.cc/300?img=60'},
+  {name:'Анна Новикова',spec:'Дерматолог',exp:8,stars:4,photo:'https://i.pravatar.cc/300?img=38'},
+  {name:'Павел Зайцев',spec:'Эндокринолог',exp:15,stars:5,photo:'https://i.pravatar.cc/300?img=67'},
+  {name:'Ирина Фёдорова',spec:'Психотерапевт',exp:10,stars:5,photo:'https://i.pravatar.cc/300?img=32'},
 ];
 
 function starsHtml(n){return '★'.repeat(n)+'☆'.repeat(5-n);}
@@ -318,6 +322,7 @@ function showPage(id){
 function openModal(doctorName){
   document.getElementById('modal-form-content').style.display='block';
   document.getElementById('modal-success').style.display='none';
+  document.getElementById('error-msg').style.display='none';
   if(doctorName) document.getElementById('f-doctor').value=doctorName;
   document.getElementById('modal').classList.add('open');
 }
@@ -326,12 +331,32 @@ function closeModal(){
   document.getElementById('modal').classList.remove('open');
 }
 
-function submitForm(){
+async function submitForm(){
   const name=document.getElementById('f-name').value.trim();
   const phone=document.getElementById('f-phone').value.trim();
   const date=document.getElementById('f-date').value;
   const doctor=document.getElementById('f-doctor').value;
-  if(!name||!phone||!date||!doctor){alert('Пожалуйста, заполните все поля');return;}
+
+  if(!name||!phone||!date||!doctor){
+    alert('Пожалуйста, заполните все поля');
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Отправляем...';
+
+  const { error } = await db.from('appointments').insert([
+    { name, phone, date, doctor }
+  ]);
+
+  if(error){
+    document.getElementById('error-msg').style.display='block';
+    btn.disabled = false;
+    btn.textContent = 'Записаться';
+    return;
+  }
+
   document.getElementById('modal-form-content').style.display='none';
   document.getElementById('modal-success').style.display='block';
   document.getElementById('f-name').value='';
