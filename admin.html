@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Админка — МедиКлиника</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bd: #0a2a5e; --bm: #1a4fa0; --bl: #2e7dd1;
+  --ac: #4fb8f0; --wh: #ffffff; --bg: #f4f9ff;
+}
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--bd); }
+
+/* LOGIN */
+.login-wrap {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--bd), var(--bm));
+}
+.login-box {
+  background: var(--wh); border-radius: 20px;
+  padding: 48px; width: 100%; max-width: 400px;
+}
+.login-logo {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 32px; justify-content: center;
+}
+.login-logo-icon {
+  width: 44px; height: 44px; background: var(--ac);
+  border-radius: 12px; display: flex; align-items: center;
+  justify-content: center; font-size: 22px; font-weight: 700;
+  color: var(--wh);
+}
+.login-logo-text { font-size: 20px; font-weight: 500; color: var(--bd); }
+.login-box h2 { font-size: 22px; color: var(--bd); margin-bottom: 6px; text-align: center; }
+.login-box p { font-size: 14px; color: #888; margin-bottom: 28px; text-align: center; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--bd); margin-bottom: 6px; }
+.form-group input {
+  width: 100%; padding: 12px 14px; border: 1.5px solid #d0dff0;
+  border-radius: 10px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+  color: var(--bd); outline: none; transition: border-color 0.2s;
+}
+.form-group input:focus { border-color: var(--bl); }
+.btn-login {
+  width: 100%; background: var(--bd); color: var(--wh);
+  border: none; padding: 13px; border-radius: 10px;
+  font-size: 15px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: background 0.2s; margin-top: 8px;
+}
+.btn-login:hover { background: var(--bm); }
+.login-error {
+  background: #fff0f0; color: #c0392b; padding: 10px 14px;
+  border-radius: 8px; font-size: 13px; margin-top: 12px; display: none; text-align: center;
+}
+
+/* ADMIN PANEL */
+.admin-wrap { display: none; min-height: 100vh; }
+
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0; width: 240px;
+  background: var(--bd); padding: 28px 20px;
+  display: flex; flex-direction: column;
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 40px;
+}
+.sidebar-logo-icon {
+  width: 36px; height: 36px; background: var(--ac); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; color: var(--wh);
+}
+.sidebar-logo-text { color: var(--wh); font-size: 16px; font-weight: 500; }
+.sidebar-menu { list-style: none; flex: 1; }
+.sidebar-menu li {
+  padding: 11px 14px; border-radius: 10px; cursor: pointer;
+  color: rgba(255,255,255,0.6); font-size: 14px;
+  display: flex; align-items: center; gap: 10px;
+  transition: background 0.2s, color 0.2s; margin-bottom: 4px;
+}
+.sidebar-menu li:hover { background: rgba(255,255,255,0.08); color: var(--wh); }
+.sidebar-menu li.active { background: var(--bl); color: var(--wh); }
+.sidebar-logout {
+  padding: 11px 14px; border-radius: 10px; cursor: pointer;
+  color: rgba(255,255,255,0.4); font-size: 14px;
+  display: flex; align-items: center; gap: 10px;
+  transition: color 0.2s;
+}
+.sidebar-logout:hover { color: #ff6b6b; }
+
+.main-content { margin-left: 240px; padding: 40px; }
+
+.page-title { font-size: 26px; font-weight: 500; color: var(--bd); margin-bottom: 8px; }
+.page-sub { font-size: 14px; color: #888; margin-bottom: 32px; }
+
+/* STATS */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 20px; margin-bottom: 36px;
+}
+.stat-card {
+  background: var(--wh); border-radius: 14px;
+  padding: 22px; border: 1px solid rgba(46,125,209,0.1);
+}
+.stat-card .label { font-size: 13px; color: #888; margin-bottom: 8px; }
+.stat-card .value { font-size: 28px; font-weight: 500; color: var(--bd); }
+.stat-card .sublabel { font-size: 12px; color: var(--bl); margin-top: 4px; }
+
+/* TABLE */
+.table-wrap {
+  background: var(--wh); border-radius: 16px;
+  border: 1px solid rgba(46,125,209,0.1); overflow: hidden;
+}
+.table-header {
+  padding: 20px 24px; display: flex;
+  align-items: center; justify-content: space-between;
+  border-bottom: 1px solid #edf2f9;
+}
+.table-header h3 { font-size: 16px; font-weight: 500; color: var(--bd); }
+.btn-refresh {
+  background: var(--bg); border: 1px solid #d0dff0;
+  color: var(--bl); padding: 8px 16px; border-radius: 8px;
+  font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s;
+}
+.btn-refresh:hover { background: #e0eeff; }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: #f8fbff; }
+th {
+  padding: 12px 20px; text-align: left; font-size: 12px;
+  font-weight: 500; color: #888; text-transform: uppercase;
+  letter-spacing: 0.5px; border-bottom: 1px solid #edf2f9;
+}
+td {
+  padding: 14px 20px; font-size: 14px; color: var(--bd);
+  border-bottom: 1px solid #f4f8ff;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f8fbff; }
+.badge {
+  display: inline-block; padding: 4px 10px; border-radius: 20px;
+  font-size: 12px; font-weight: 500;
+}
+.badge-new { background: #e8f5e9; color: #2e7d32; }
+.empty-state {
+  text-align: center; padding: 60px 20px; color: #aaa;
+}
+.empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+.loading { text-align: center; padding: 40px; color: #888; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN FORM -->
+<div class="login-wrap" id="login-page">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">М</div>
+      <span class="login-logo-text">МедиКлиника</span>
+    </div>
+    <h2>Вход в админку</h2>
+    <p>Только для сотрудников клиники</p>
+    <div class="form-group">
+      <label>Логин</label>
+      <input type="text" id="login-input" placeholder="admin">
+    </div>
+    <div class="form-group">
+      <label>Пароль</label>
+      <input type="password" id="pass-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Войти</button>
+    <div class="login-error" id="login-error">Неверный логин или пароль</div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-wrap" id="admin-page">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">М</div>
+      <span class="sidebar-logo-text">МедиКлиника</span>
+    </div>
+    <ul class="sidebar-menu">
+      <li class="active">📋 Заявки</li>
+      <li onclick="window.open('/', '_blank')">🌐 Открыть сайт</li>
+    </ul>
+    <div class="sidebar-logout" onclick="doLogout()">🚪 Выйти</div>
+  </div>
+
+  <div class="main-content">
+    <p class="page-title">Заявки на приём</p>
+    <p class="page-sub" id="last-updated">Загрузка данных...</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="label">Всего заявок</div>
+        <div class="value" id="stat-total">—</div>
+        <div class="sublabel">за всё время</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Сегодня</div>
+        <div class="value" id="stat-today">—</div>
+        <div class="sublabel">новых заявок</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Эта неделя</div>
+        <div class="value" id="stat-week">—</div>
+        <div class="sublabel">заявок</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Популярный врач</div>
+        <div class="value" style="font-size:16px;" id="stat-top">—</div>
+        <div class="sublabel">больше всего записей</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-header">
+        <h3>Все заявки</h3>
+        <button class="btn-refresh" onclick="loadAppointments()">↻ Обновить</button>
+      </div>
+      <div id="table-container">
+        <div class="loading">Загрузка...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://qudmrazjqdmageqifgeq.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF1ZG1yYXpqcWRtYWdlcWlmZ2VxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODYxODgsImV4cCI6MjA5MjQ2MjE4OH0.JzR-jOfNohQlI_EnMjyuKS6jDXEVgw04PfLlQvXodgg'
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+const ADMIN_LOGIN = 'admin'
+const ADMIN_PASS = 'mediklinika2026'
+
+function doLogin() {
+  const login = document.getElementById('login-input').value.trim()
+  const pass = document.getElementById('pass-input').value.trim()
+
+  if (login === ADMIN_LOGIN && pass === ADMIN_PASS) {
+    document.getElementById('login-page').style.display = 'none'
+    document.getElementById('admin-page').style.display = 'flex'
+    loadAppointments()
+  } else {
+    document.getElementById('login-error').style.display = 'block'
+  }
+}
+
+function doLogout() {
+  document.getElementById('login-page').style.display = 'flex'
+  document.getElementById('admin-page').style.display = 'none'
+  document.getElementById('login-input').value = ''
+  document.getElementById('pass-input').value = ''
+}
+
+async function loadAppointments() {
+  document.getElementById('table-container').innerHTML = '<div class="loading">Загрузка...</div>'
+
+  const { data, error } = await db
+    .from('appointments')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error || !data) {
+    document.getElementById('table-container').innerHTML = '<div class="empty-state"><div class="icon">⚠️</div><p>Ошибка загрузки данных</p></div>'
+    return
+  }
+
+  // Считаем статистику
+  const total = data.length
+  const today = data.filter(r => {
+    const d = new Date(r.created_at)
+    const now = new Date()
+    return d.toDateString() === now.toDateString()
+  }).length
+
+  const weekAgo = new Date()
+  weekAgo.setDate(weekAgo.getDate() - 7)
+  const week = data.filter(r => new Date(r.created_at) > weekAgo).length
+
+  // Самый популярный врач
+  const docCount = {}
+  data.forEach(r => {
+    const name = r.doctor?.split(' ').slice(0,2).join(' ') || 'Не указан'
+    docCount[name] = (docCount[name] || 0) + 1
+  })
+  const topDoc = Object.entries(docCount).sort((a,b) => b[1]-a[1])[0]?.[0] || '—'
+
+  document.getElementById('stat-total').textContent = total
+  document.getElementById('stat-today').textContent = today
+  document.getElementById('stat-week').textContent = week
+  document.getElementById('stat-top').textContent = topDoc
+
+  const now = new Date()
+  document.getElementById('last-updated').textContent =
+    `Обновлено: ${now.toLocaleTimeString('ru-RU')}`
+
+  if (data.length === 0) {
+    document.getElementById('table-container').innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📭</div>
+        <p>Заявок пока нет</p>
+      </div>`
+    return
+  }
+
+  const rows = data.map(r => {
+    const date = new Date(r.created_at)
+    const dateStr = date.toLocaleDateString('ru-RU')
+    const timeStr = date.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'})
+    return `<tr>
+      <td>${r.name || '—'}</td>
+      <td>${r.phone || '—'}</td>
+      <td>${r.date || '—'}</td>
+      <td>${r.doctor || '—'}</td>
+      <td>${dateStr} ${timeStr}</td>
+      <td><span class="badge badge-new">Новая</span></td>
+    </tr>`
+  }).join('')
+
+  document.getElementById('table-container').innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Имя</th>
+          <th>Телефон</th>
+          <th>Дата записи</th>
+          <th>Врач</th>
+          <th>Время заявки</th>
+          <th>Статус</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`
+}
+</script>
+</body>
+</html>
