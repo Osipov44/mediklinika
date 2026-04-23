@@ -125,6 +125,78 @@ footer{background:var(--bd);color:rgba(255,255,255,0.6);padding:50px 48px 32px;d
 .success-msg h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--bd);margin-bottom:8px;}
 .success-msg p{font-size:14px;color:var(--mu);}
 .error-msg{background:#fff0f0;color:#c0392b;padding:10px 14px;border-radius:8px;font-size:13px;margin-top:10px;display:none;}
+
+.reviews-page{padding:100px 48px 80px;}
+.reviews-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px;max-width:1100px;margin:0 auto;}
+.review-card{background:var(--wh);border:1px solid rgba(46,125,209,0.15);border-radius:20px;padding:32px;transition:transform 0.25s,box-shadow 0.25s;display:flex;flex-direction:column;gap:16px;}
+.review-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(10,42,94,0.1);}
+.review-header{display:flex;align-items:center;gap:14px;}
+.review-avatar{width:48px;height:48px;border-radius:50%;background:var(--bd);color:var(--wh);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:20px;font-weight:600;flex-shrink:0;}
+.reviewer-name{font-size:15px;font-weight:500;color:var(--bd);}
+.review-date{font-size:12px;color:var(--mu);margin-top:2px;}
+.review-stars{color:#f0aa00;font-size:16px;letter-spacing:2px;}
+.review-text{font-size:14px;color:#445;line-height:1.8;font-weight:300;}
+.review-tag{display:inline-block;background:#f0f7ff;color:var(--bl);font-size:12px;padding:4px 10px;border-radius:6px;align-self:flex-start;}
+
+/* ── Hamburger ── */
+.burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:none;border:none;}
+.burger span{display:block;width:22px;height:2px;background:var(--wh);border-radius:2px;transition:transform 0.3s,opacity 0.3s;}
+.burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.burger.open span:nth-child(2){opacity:0;}
+.burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ── Mobile nav drawer ── */
+.nav-drawer{display:none;position:fixed;top:68px;left:0;right:0;z-index:199;
+  background:rgba(10,42,94,0.98);backdrop-filter:blur(10px);
+  flex-direction:column;padding:20px 24px 28px;gap:4px;}
+.nav-drawer.open{display:flex;}
+.nav-drawer a{color:rgba(255,255,255,0.8);text-decoration:none;font-size:16px;
+  padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.07);cursor:pointer;transition:color 0.2s;}
+.nav-drawer a:last-child{border-bottom:none;}
+.nav-drawer a:hover{color:var(--ac);}
+.nav-drawer .drawer-cta{margin-top:12px;background:var(--yl);color:var(--bd)!important;
+  text-align:center;border-radius:10px;padding:13px;font-weight:600;border-bottom:none!important;}
+
+@media(max-width:768px){
+  nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .burger{display:flex;}
+
+  .hero{padding:100px 20px 48px;}
+  .hero h1{font-size:34px;}
+  .hero p{font-size:15px;}
+  .hero-buttons{flex-direction:column;align-items:center;gap:10px;margin-bottom:40px;}
+  .hero-buttons button{width:100%;max-width:300px;}
+  .stats{flex-direction:column;width:100%;}
+  .stat{border-right:none!important;border-bottom:1px solid rgba(255,255,255,0.1);padding:16px 24px;}
+  .stat:last-child{border-bottom:none;}
+
+  .doctors-section{padding:60px 20px;}
+  .about-page{padding:80px 20px 60px;}
+  .doctors-page{padding:80px 20px 60px;}
+  .addresses-page{padding:80px 20px 60px;}
+  .reviews-page{padding:80px 20px 60px;}
+
+  .about-hero{padding:40px 28px;}
+  .about-hero h1{font-size:28px;}
+  .about-hero p{font-size:14px;}
+  .about-grid{grid-template-columns:1fr;}
+  .about-values{grid-template-columns:1fr;}
+
+  .addresses-grid{grid-template-columns:1fr;}
+
+  .page-header h1{font-size:30px;}
+
+  footer{grid-template-columns:1fr;padding:40px 20px 24px;gap:24px;}
+  .footer-bottom{padding:14px 20px 20px;}
+
+  .modal{padding:28px 20px;margin:16px;border-radius:16px;}
+  .form-row{grid-template-columns:1fr;}
+
+  .doctors-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));}
+  .doctors-full-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr));}
+  .reviews-grid{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
@@ -138,9 +210,21 @@ footer{background:var(--bd);color:rgba(255,255,255,0.6);padding:50px 48px 32px;d
     <li><a onclick="showPage('about')">О нас</a></li>
     <li><a onclick="showPage('doctors')">Доктора</a></li>
     <li><a onclick="showPage('addresses')">Наши адреса</a></li>
+    <li><a onclick="showPage('reviews')">Отзывы</a></li>
     <li><a class="nav-cta" onclick="openModal()">Записаться</a></li>
   </ul>
+  <button class="burger" id="burger" onclick="toggleDrawer()" aria-label="Меню">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div class="nav-drawer" id="nav-drawer">
+  <a onclick="navTo('about')">О нас</a>
+  <a onclick="navTo('doctors')">Доктора</a>
+  <a onclick="navTo('addresses')">Наши адреса</a>
+  <a onclick="navTo('reviews')">Отзывы</a>
+  <a class="drawer-cta" onclick="navModal()">Записаться</a>
+</div>
 
 <!-- HOME -->
 <div id="page-home" class="page active">
@@ -169,7 +253,7 @@ footer{background:var(--bd);color:rgba(255,255,255,0.6);padding:50px 48px 32px;d
   </section>
   <footer>
     <div class="footer-col"><h4>МедиКлиника</h4><p>Современная медицина<br>с заботой о каждом пациенте.</p></div>
-    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="openModal()">Записаться</a></div>
+    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="showPage('reviews')">Отзывы</a><a onclick="openModal()">Записаться</a></div>
     <div class="footer-col"><h4>Контакты</h4><p>📞 +7 (4822) 55-00-11</p><p>✉️ info@mediklinika.ru</p><p>📍 Тверь, ул. Советская, 1</p><p>⏰ Пн–Пт: 8:00–20:00</p></div>
   </footer>
   <div class="footer-bottom">© 2026 МедиКлиника. Все права защищены.</div>
@@ -194,7 +278,7 @@ footer{background:var(--bd);color:rgba(255,255,255,0.6);padding:50px 48px 32px;d
   </div>
   <footer>
     <div class="footer-col"><h4>МедиКлиника</h4><p>Современная медицина с заботой о каждом пациенте.</p></div>
-    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="openModal()">Записаться</a></div>
+    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="showPage('reviews')">Отзывы</a><a onclick="openModal()">Записаться</a></div>
     <div class="footer-col"><h4>Контакты</h4><p>📞 +7 (4822) 55-00-11</p><p>✉️ info@mediklinika.ru</p><p>📍 Тверь, ул. Советская, 1</p><p>⏰ Пн–Пт: 8:00–20:00</p></div>
   </footer>
   <div class="footer-bottom">© 2026 МедиКлиника. Все права защищены.</div>
@@ -212,7 +296,7 @@ footer{background:var(--bd);color:rgba(255,255,255,0.6);padding:50px 48px 32px;d
   </div>
   <footer>
     <div class="footer-col"><h4>МедиКлиника</h4><p>Современная медицина с заботой о каждом пациенте.</p></div>
-    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="openModal()">Записаться</a></div>
+    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="showPage('reviews')">Отзывы</a><a onclick="openModal()">Записаться</a></div>
     <div class="footer-col"><h4>Контакты</h4><p>📞 +7 (4822) 55-00-11</p><p>✉️ info@mediklinika.ru</p><p>📍 Тверь, ул. Советская, 1</p><p>⏰ Пн–Пт: 8:00–20:00</p></div>
   </footer>
   <div class="footer-bottom">© 2026 МедиКлиника. Все права защищены.</div>
@@ -235,7 +319,74 @@ footer{background:var(--bd);color:rgba(255,255,255,0.6);padding:50px 48px 32px;d
   </div>
   <footer>
     <div class="footer-col"><h4>МедиКлиника</h4><p>Современная медицина с заботой о каждом пациенте.</p></div>
-    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="openModal()">Записаться</a></div>
+    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="showPage('reviews')">Отзывы</a><a onclick="openModal()">Записаться</a></div>
+    <div class="footer-col"><h4>Контакты</h4><p>📞 +7 (4822) 55-00-11</p><p>✉️ info@mediklinika.ru</p><p>📍 Тверь, ул. Советская, 1</p><p>⏰ Пн–Пт: 8:00–20:00</p></div>
+  </footer>
+  <div class="footer-bottom">© 2026 МедиКлиника. Все права защищены.</div>
+</div>
+
+<!-- REVIEWS -->
+<div id="page-reviews" class="page">
+  <div class="reviews-page">
+    <div class="page-header">
+      <p class="section-label">Мнения пациентов</p>
+      <h1>Отзывы о клинике</h1>
+      <p>Нам доверяют тысячи пациентов — вот что они говорят</p>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar">А</div>
+          <div>
+            <div class="reviewer-name">Анна Громова</div>
+            <div class="review-date">Март 2026</div>
+          </div>
+        </div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">Наблюдаюсь здесь уже три года. Доктор Иванов — настоящий профессионал: внимательный, чёткий, всегда объясняет ситуацию понятным языком. Клиника чистая, персонал вежливый, очередей нет.</p>
+        <span class="review-tag">Кардиология</span>
+      </div>
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar">М</div>
+          <div>
+            <div class="reviewer-name">Михаил Захаров</div>
+            <div class="review-date">Февраль 2026</div>
+          </div>
+        </div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">Привёл ребёнка к педиатру Соколовой — остался очень доволен. Врач нашла подход к малышу буквально за минуту, диагноз поставила точно, лечение помогло быстро. Запись онлайн — очень удобно.</p>
+        <span class="review-tag">Педиатрия</span>
+      </div>
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar">Е</div>
+          <div>
+            <div class="reviewer-name">Екатерина Орлова</div>
+            <div class="review-date">Апрель 2026</div>
+          </div>
+        </div>
+        <div class="review-stars">★★★★☆</div>
+        <p class="review-text">Обращалась к неврологу Петровой с хроническими мигренями. После курса лечения приступы стали гораздо реже. Единственный минус — парковка у Центрального филиала маловата, но это мелочи.</p>
+        <span class="review-tag">Неврология</span>
+      </div>
+      <div class="review-card">
+        <div class="review-header">
+          <div class="review-avatar">В</div>
+          <div>
+            <div class="reviewer-name">Виктор Смирнов</div>
+            <div class="review-date">Январь 2026</div>
+          </div>
+        </div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">Делал операцию у хирурга Морозова. Всё прошло чётко и профессионально. Послеоперационное наблюдение на высшем уровне — врач сам звонил, уточнял самочувствие. Рекомендую клинику без сомнений.</p>
+        <span class="review-tag">Хирургия</span>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-col"><h4>МедиКлиника</h4><p>Современная медицина с заботой о каждом пациенте.</p></div>
+    <div class="footer-col"><h4>Навигация</h4><a onclick="showPage('about')">О нас</a><a onclick="showPage('doctors')">Доктора</a><a onclick="showPage('addresses')">Наши адреса</a><a onclick="showPage('reviews')">Отзывы</a><a onclick="openModal()">Записаться</a></div>
     <div class="footer-col"><h4>Контакты</h4><p>📞 +7 (4822) 55-00-11</p><p>✉️ info@mediklinika.ru</p><p>📍 Тверь, ул. Советская, 1</p><p>⏰ Пн–Пт: 8:00–20:00</p></div>
   </footer>
   <div class="footer-bottom">© 2026 МедиКлиника. Все права защищены.</div>
@@ -313,6 +464,21 @@ doctors.forEach(d=>{
   sel.appendChild(o);
 });
 
+function toggleDrawer(){
+  const b=document.getElementById('burger');
+  const d=document.getElementById('nav-drawer');
+  b.classList.toggle('open');
+  d.classList.toggle('open');
+}
+
+function closeDrawer(){
+  document.getElementById('burger').classList.remove('open');
+  document.getElementById('nav-drawer').classList.remove('open');
+}
+
+function navTo(id){closeDrawer();showPage(id);}
+function navModal(){closeDrawer();openModal();}
+
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
@@ -369,5 +535,11 @@ document.getElementById('modal').addEventListener('click',function(e){
   if(e.target===this) closeModal();
 });
 </script>
+<script>
+    console.log("Привет из JavaScript!")
+    
+    let myList = ["Иванов", "Петрова", "Сидоров"]
+    myList.forEach(d => console.log(d))
+  </script>
 </body>
 </html>
